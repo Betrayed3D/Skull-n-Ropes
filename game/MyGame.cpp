@@ -202,6 +202,16 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 	if ((sym == SDLK_w || sym == SDLK_UP) && (m_state == STANDING || m_state == RUNNING))
 	{
 		m_player.Accelerate(0, 800);
+
+		if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
+		{
+			m_player.Accelerate(-300, 0);
+		}
+		else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
+		{
+			m_player.Accelerate(300, 0);
+		}
+
 		m_state = AIRBORNE;
 		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
 	}
