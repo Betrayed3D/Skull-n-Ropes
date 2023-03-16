@@ -63,6 +63,7 @@ void CMyGame::OnUpdate()
 	m_player.Update(t);
 
 	int height = m_player.GetHeight() / 2 - 1;
+	int width = m_player.GetWidth() / 2 - 1;
 	bool touching_platform = false;
 	for (CSprite* pSprite : m_sprites)
 	{
@@ -75,6 +76,12 @@ void CMyGame::OnUpdate()
 					touching_platform = true;
 					m_player.SetVelocity(0, 0);
 					m_player.SetY(pSprite->GetTop() + height);
+				}
+				else if (v0.m_x >= pSprite->GetRight() + width)
+				{
+					touching_platform = true;
+					m_player.SetVelocity(0, 0);
+					m_player.SetX(pSprite->GetRight() + width);
 				}
 			}
 		}
