@@ -63,6 +63,7 @@ void CMyGame::OnUpdate()
 	m_player.Update(t);
 
 	int height = m_player.GetHeight() / 2 - 1;
+	bool touching_platform = false;
 	for (CSprite* pSprite : m_sprites)
 	{
 		if (m_player.HitTest(pSprite, 0))
@@ -71,11 +72,24 @@ void CMyGame::OnUpdate()
 			{
 				if (v0.m_y >= pSprite->GetTop() + height)
 				{
+					touching_platform = true;
 					m_player.SetVelocity(0, 0);
 					m_player.SetY(pSprite->GetTop() + height);
 				}
 			}
 		}
+	}
+	//control state transitions
+	if (m_state == AIRBORNE && touching_platform)
+	{
+		//landed
+		m_state = STANDING;
+		m_player.SetImage(m_side == LEFT ? "stand_left" : "stand_right");
+	}
+	if (m_state != AIRBORNE && !touching_platform)
+	{
+		m_state = AIRBORNE;
+		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
 	}
 }
 
