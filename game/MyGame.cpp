@@ -20,29 +20,38 @@ void CMyGame::OnUpdate()
 {
 	Uint32 t = GetTime();
 
+	//player gravity
+	if (m_state == AIRBORNE)
+	{
+		m_player.Accelerate(0, -50);
+	}
+
 	// Run and Stand
-	m_player.SetVelocity(0, 0);
-	if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
+	if (m_state == STANDING || m_state == RUNNING)
 	{
-		m_player.Accelerate(-300, 0);
-		if (m_state != RUNNING || m_side != LEFT)
-			m_player.SetAnimation("run_left");
-		m_state = RUNNING;
-		m_side = LEFT;
-	}
-	else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
-	{
-		m_player.Accelerate(300, 0);
-		if (m_state != RUNNING || m_side != RIGHT)
-			m_player.SetAnimation("run_right");
-		m_state = RUNNING;
-		m_side = RIGHT;
-	}
-	else
-	{
-		if (m_state == RUNNING)
-			m_player.SetImage(m_side == LEFT ? "stand_left" : "stand_right");
-		m_state = STANDING;
+		m_player.SetVelocity(0, 0);
+		if (IsKeyDown(SDLK_a) || IsKeyDown(SDLK_LEFT))
+		{
+			m_player.Accelerate(-300, 0);
+			if (m_state != RUNNING || m_side != LEFT)
+				m_player.SetAnimation("run_left");
+			m_state = RUNNING;
+			m_side = LEFT;
+		}
+		else if (IsKeyDown(SDLK_d) || IsKeyDown(SDLK_RIGHT))
+		{
+			m_player.Accelerate(300, 0);
+			if (m_state != RUNNING || m_side != RIGHT)
+				m_player.SetAnimation("run_right");
+			m_state = RUNNING;
+			m_side = RIGHT;
+		}
+		else
+		{
+			if (m_state == RUNNING)
+				m_player.SetImage(m_side == LEFT ? "stand_left" : "stand_right");
+			m_state = STANDING;
+		}
 	}
 
 	// Pre-Update Position
@@ -52,6 +61,22 @@ void CMyGame::OnUpdate()
 	for (CSprite *pSprite : m_sprites)
 		pSprite->Update(t);
 	m_player.Update(t);
+
+	int height = m_player.GetHeight() / 2 - 1;
+	for (CSprite* pSprite : m_sprites)
+	{
+		if (m_player.HitTest(pSprite, 0))
+		{
+			if ((string)pSprite->GetProperty("tag") == "platform")
+			{
+				if (v0.m_y >= pSprite->GetTop() + height)
+				{
+					m_player.SetVelocity(0, 0);
+					m_player.SetY(pSprite->GetTop() + height);
+				}
+			}
+		}
+	}
 }
 
 void CMyGame::OnDraw(CGraphics* g)
@@ -135,7 +160,7 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	// any initialisation common to all levels
 	m_player.SetImage("stand_right");
 	m_player.SetVelocity(0, 0);
-	m_state = STANDING;
+	m_state = AIRBORNE;
 	m_side = RIGHT;
 }
 
@@ -160,6 +185,12 @@ void CMyGame::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 		PauseGame();
 	if (sym == SDLK_F2)
 		NewGame();
+	if ((sym == SDLK_w || sym == SDLK_UP) && (m_state == STANDING || m_state == RUNNING))
+	{
+		m_player.Accelerate(0, 800);
+		m_state = AIRBORNE;
+		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
+	}
 }
 
 void CMyGame::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
