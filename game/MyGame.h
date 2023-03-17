@@ -9,6 +9,8 @@ class CMyGame : public CGame
 	// Player State
 	enum { STANDING, RUNNING, AIRBORNE, CLIMBING } m_state;
 	enum { LEFT, RIGHT } m_side;
+	int platform_arrayX[2] = { 100,200 };
+	int platform_arrayY[2] = { 100,200 };
 
 public:
 	CMyGame(void);

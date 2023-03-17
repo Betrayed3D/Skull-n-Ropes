@@ -95,10 +95,6 @@ void CMyGame::OnUpdate()
 					m_player.SetX(pSprite->GetLeft() - width);
 				}
 			}
-			if ((string)pSprite->GetProperty("tag") == "rope")
-			{
-				touching_rope = true;
-			}
 		}
 	}
 	//control state transitions
@@ -111,18 +107,6 @@ void CMyGame::OnUpdate()
 	if (m_state != AIRBORNE && !touching_platform)
 	{
 		//just jumped
-		m_state = AIRBORNE;
-		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
-	}
-	if (m_state == AIRBORNE && touching_rope)
-	{
-		//hanging on rope
-		m_state = CLIMBING;
-		m_player.SetImage("hang");
-	}
-	if (m_state != AIRBORNE && !touching_rope)
-	{
-		//jumped off of rope
 		m_state = AIRBORNE;
 		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
 	}
@@ -197,9 +181,12 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		lWall->SetProperty("tag", "platform");
 		m_sprites.push_back(lWall);
 
-		rWall = new CSpriteRect(810, 10, 10, GetHeight(), CColor::Black(), CColor::White(), GetTime());
-		rWall->SetProperty("tag", "platform");
-		m_sprites.push_back(rWall);
+		for (int i = 0; i < 2; i++)
+		{
+			rWall = new CSpriteRect(platform_arrayX[i], platform_arrayY[i], 100, 50, CColor::Black(), CColor::White(), GetTime());
+			rWall->SetProperty("tag", "platform");
+			m_sprites.push_back(rWall);
+		}
 
 		// Enemies
 		pSprite = new CSprite(20, 30, "skull20.png", CColor::White(), GetTime());
