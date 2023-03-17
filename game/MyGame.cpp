@@ -71,17 +71,29 @@ void CMyGame::OnUpdate()
 		{
 			if ((string)pSprite->GetProperty("tag") == "platform")
 			{
-				if (v0.m_y >= pSprite->GetTop() + height)
+				if (v0.m_y >= pSprite->GetTop() + height) //collision with the top of a platform
 				{
 					touching_platform = true;
 					m_player.SetVelocity(0, 0);
 					m_player.SetY(pSprite->GetTop() + height);
 				}
-				else if (v0.m_x >= pSprite->GetRight() + width)
+				else if (v0.m_y <= pSprite->GetBottom() - height) //collision with the bottom of the platform
 				{
 					touching_platform = true;
 					m_player.SetVelocity(0, 0);
+					m_player.SetY(pSprite->GetBottom() - height);
+				}
+				else if (v0.m_x >= pSprite->GetRight() + width) //collision with the right of a platform
+				{
+					touching_platform = true;
+					m_player.SetVelocity(0, m_player.GetYVelocity());
 					m_player.SetX(pSprite->GetRight() + width);
+				}
+				else if (v0.m_x <= pSprite->GetLeft() - width) //collision with the left of the platform
+				{
+					touching_platform = true;
+					m_player.SetVelocity(0, 0);
+					m_player.SetX(pSprite->GetLeft() - width);
 				}
 			}
 		}
@@ -147,6 +159,8 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 	m_sprites.clear();
 
 	CSprite *pSprite;
+	CSprite* lWall;
+	CSprite* rWall;
 
 	switch (nLevel)
 	{
@@ -162,6 +176,14 @@ void CMyGame::OnStartLevel(Sint16 nLevel)
 		pSprite = new CSpriteRect(400, 10, 800, 20, CColor::Black(), CColor::White(), GetTime());
 		pSprite->SetProperty("tag", "platform");
 		m_sprites.push_back(pSprite);
+
+		lWall = new CSpriteRect(-10, 10, 10, GetHeight(), CColor::Black(), CColor::White(), GetTime());
+		lWall->SetProperty("tag", "platform");
+		m_sprites.push_back(lWall);
+
+		rWall = new CSpriteRect(810, 10, 10, GetHeight(), CColor::Black(), CColor::White(), GetTime());
+		rWall->SetProperty("tag", "platform");
+		m_sprites.push_back(rWall);
 
 		// Enemies
 		pSprite = new CSprite(20, 30, "skull20.png", CColor::White(), GetTime());
