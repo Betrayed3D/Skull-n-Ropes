@@ -85,13 +85,11 @@ void CMyGame::OnUpdate()
 				}
 				else if (v0.m_x >= pSprite->GetRight() + width) //collision with the right of a platform
 				{
-					touching_platform = true;
 					m_player.SetVelocity(0, m_player.GetYVelocity());
 					m_player.SetX(pSprite->GetRight() + width);
 				}
 				else if (v0.m_x <= pSprite->GetLeft() - width) //collision with the left of the platform
 				{
-					touching_platform = true;
 					m_player.SetVelocity(0, 0);
 					m_player.SetX(pSprite->GetLeft() - width);
 				}
