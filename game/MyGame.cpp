@@ -65,6 +65,7 @@ void CMyGame::OnUpdate()
 	int height = m_player.GetHeight() / 2 - 1;
 	int width = m_player.GetWidth() / 2 - 1;
 	bool touching_platform = false;
+	bool touching_rope = false;
 	for (CSprite* pSprite : m_sprites)
 	{
 		if (m_player.HitTest(pSprite, 0))
@@ -94,6 +95,10 @@ void CMyGame::OnUpdate()
 					m_player.SetX(pSprite->GetLeft() - width);
 				}
 			}
+			if ((string)pSprite->GetProperty("tag") == "rope")
+			{
+				touching_rope = true;
+			}
 		}
 	}
 	//control state transitions
@@ -105,6 +110,19 @@ void CMyGame::OnUpdate()
 	}
 	if (m_state != AIRBORNE && !touching_platform)
 	{
+		//just jumped
+		m_state = AIRBORNE;
+		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
+	}
+	if (m_state == AIRBORNE && touching_rope)
+	{
+		//hanging on rope
+		m_state = CLIMBING;
+		m_player.SetImage("hang");
+	}
+	if (m_state != AIRBORNE && !touching_rope)
+	{
+		//jumped off of rope
 		m_state = AIRBORNE;
 		m_player.SetImage(m_side == LEFT ? "jump_left" : "jump_right");
 	}
